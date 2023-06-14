@@ -1,3 +1,4 @@
+var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
@@ -5,8 +6,6 @@ const fs = require("fs");
 var indexRouter = require("./routes/index");
 
 var app = express();
-
-// require("./src/panorama/src/getData")("2023-06-14");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

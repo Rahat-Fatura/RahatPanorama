@@ -8,6 +8,7 @@ module.exports = (invoices, customers, balances) => {
             let rec_no = 0;
             let inv_ob = {};
             for (let i = 0; i < invoices.length; i++) {
+                if (invoices[i].Tur != 0) continue;
                 let invoice = invoices[i];
                 if (rec_no != invoice.Belgekod) {
                     if (rec_no != 0) {
@@ -34,8 +35,8 @@ module.exports = (invoices, customers, balances) => {
                             customer.Adres1 +
                             (customer.Adres2 ? " " + customer.Adres2 : "")
                         ).replace("&", ""),
-                        City: customer.Sehir,
-                        District: customer.Ilce,
+                        City: customer.Sehir ? customer.Sehir : "...",
+                        District: customer.Ilce ? customer.Ilce : "...",
                         Country: "Türkiye",
                         Phone:
                             customer.Telefon +
@@ -60,12 +61,24 @@ module.exports = (invoices, customers, balances) => {
                             },
                             {
                                 Note:
-                                    balance.Bakiye != 0
-                                        ? `Müşteri Güncel Bakiyesi : ${balance.Bakiye} TL`
+                                    balance?.Bakiye != 0
+                                        ? `Müşteri Güncel Bakiyesi : ${balance?.Bakiye} TL`
                                         : "",
                             },
                         ],
                     };
+                    let allowance = {};
+                    if (invoice.Detayisktutar > 0) {
+                        allowance = {
+                            Allowance: {
+                                Percent: parseFloat(
+                                    (invoice.Detayisktutar * 100) /
+                                        (invoice.Detaynetfiyat +
+                                            invoice.Detayisktutar)
+                                ),
+                            },
+                        };
+                    }
                     let invoice_object = {
                         External: {
                             ID: invoice.Belgekod,
@@ -89,12 +102,7 @@ module.exports = (invoices, customers, balances) => {
                                 KDV: {
                                     Percent: invoice.Detaykdvoran,
                                 },
-                                Allowance: {
-                                    Percent:
-                                        (invoice.Detayisktutar * 100) /
-                                        (invoice.Detaynetfiyat +
-                                            invoice.Detayisktutar),
-                                },
+                                ...allowance,
                                 AdditionalNames: {
                                     BuyerCode: invoice.Urunkod,
                                 },
@@ -107,6 +115,20 @@ module.exports = (invoices, customers, balances) => {
                     };
                 } else {
                     let lines = inv_ob.document.Lines;
+
+                    let allowance = {};
+                    if (invoice.Detayisktutar > 0) {
+                        allowance = {
+                            Allowance: {
+                                Percent: parseFloat(
+                                    (invoice.Detayisktutar * 100) /
+                                        (invoice.Detaynetfiyat +
+                                            invoice.Detayisktutar)
+                                ),
+                            },
+                        };
+                    }
+
                     lines.push({
                         Name: invoice.UrunAdi,
                         Quantity: invoice.Miktar,
@@ -115,11 +137,7 @@ module.exports = (invoices, customers, balances) => {
                         KDV: {
                             Percent: invoice.Detaykdvoran,
                         },
-                        Allowance: {
-                            Percent:
-                                (invoice.Detayisktutar * 100) /
-                                (invoice.Detaynetfiyat + invoice.Detayisktutar),
-                        },
+                        ...allowance,
                         AdditionalNames: {
                             BuyerCode: invoice.Urunkod,
                         },
