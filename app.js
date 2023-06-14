@@ -6,7 +6,7 @@ var indexRouter = require("./routes/index");
 
 var app = express();
 
-require("./src/panorama/src/getData")();
+require("./src/panorama/src/getData")("2023-06-14");
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
