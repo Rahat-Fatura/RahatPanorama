@@ -1,0 +1,27 @@
+<!-- Core JS -->
+<!-- build:js assets/vendor/js/core.js -->
+<script src="/vendor/libs/jquery/jquery.js"></script>
+<script src="/vendor/libs/popper/popper.js"></script>
+<script src="/vendor/js/bootstrap.js"></script>
+<script src="/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+<script src="/vendor/libs/node-waves/node-waves.js"></script>
+<script src="/vendor/libs/hammer/hammer.js"></script>
+<script src="/vendor/js/menu.js"></script>
+<!-- endbuild -->
+
+<script>
+    $(window).on("load", function() {
+        $('#<%= page.menu %>-nav').addClass('active');
+        $('#<%= page.uppermenu %>-upnav').addClass('active open');
+    });
+</script>
+
+<!-- Vendors JS -->
+<%- include('./js/vendor') %>
+
+<!-- Main JS -->
+<script src="/js/pages/main.js"></script>
+
+<!-- Page JS -->
+<%- include('./js/page') %>
+<%- include('./js/custom') %>

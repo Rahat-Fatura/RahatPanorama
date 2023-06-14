@@ -1,0 +1,25 @@
+{
+  "name": "rahat-panorama",
+  "version": "0.0.0",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "config": "^3.3.9",
+    "cookie-parser": "~1.4.4",
+    "date-and-time": "^3.0.0",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "soap": "^1.0.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

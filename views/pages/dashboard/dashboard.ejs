@@ -1,0 +1,203 @@
+<%- include('../../partials/doctype.ejs') %>
+
+<head>
+    <%- include('../../partials/header') %>
+    <title><%= page.display %> - EsconeApp</title>
+    <%- include('../../partials/theme_css') %>
+    <style>
+        .rag-red {
+            background-color: lightcoral;
+        }
+
+        .rag-green {
+            background-color: lightgreen;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
+        <div class="layout-container">
+            <% if(page.name != 'login' && page.name != '404') { %>
+            <%- include('../../partials/navbar') %>
+            <% } %>
+
+            <!-- Layout container -->
+            <div class="layout-page">
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+                    <% if(page.name != 'login' && page.name != '404') { %>
+                    <%- include('../../partials/menu') %>
+                    <% } %>
+                    <!-- Content -->
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <div class="card">
+                            <div class="card-body demo-vertical-spacing demo-only-element">
+                                <div class="card-title header-elements">
+                                    <h4 class="m-0 me-2">Bağlantılar</h4>
+                                    <div class="card-header-elements ms-auto">
+                                        <button id="refresh-lines" type="button" class="btn btn-info waves-effect waves-light me-2">
+                                            <span class="tf-icon ti ti-refresh me-1"></span>Yenile
+                                        </button>
+                                        <button type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#add-new-connection">
+                                            <span class="tf-icon ti ti-plus me-1"></span>Yeni Bağlantı
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div id="connections-grid" style="width: 100%; height: 400px;" class="ag-theme-alpine"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / Content -->
+
+                    <!-- Footer -->
+                    <%- include('../../partials/footer') %>
+                    <!-- / Footer -->
+
+                    <div class="content-backdrop fade"></div>
+                </div>
+                <!-- Content wrapper -->
+            </div>
+            <!-- / Layout page -->
+        </div>
+        <div class="modal fade" id="add-new-connection" data-bs-backdrop="static" tabindex="-1" aria-hidden=" true">
+            <div class="modal-dialog modal-lg modal-simple modal-edit-user">
+                <form id="new-connection" class="modal-content p-3 p-md-5">
+                    <div class="modal-body">
+                        <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="text-center mb-4">
+                            <h3 class="mb-2">Yeni Bağlantı</h3>
+                            <p class="text-muted">Bağlantı için aşağıdaki bilgileri doldurunuz!</p>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" for="company_name">Bağlantı Adı</label>
+                                <input type="text" id="company_name" name="company_name" class="form-control"" />
+                            </div>
+                            <div class=" col-12">
+                                <label class=" form-label" for="connection_type">Bağlantı Tipi</label>
+                                <select id="connection_type" name="connection_type" class="form-select">
+                                    <option value="mssql">SQL Server</option>
+                                </select>
+                            </div>
+                            <div class="col-10 col-md-8">
+                                <label class="form-label" for="connection_string">Bağlantı Cümlesi</label>
+                                <input type="text" id="connection_string" name="connection_string" class="form-control" />
+                            </div>
+                            <div class="col-2 col-md-4">
+                                <div class="d-grid mt-4">
+                                    <button id="check_connection_string" type="button" class="btn btn-label-info">Test Et</button>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="company_code">Firma Kodu</label>
+                                <input type="text" id="company_code" name="company_code" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="mserver_connection_string">Ana Server Bağlantı URL'si</label>
+                                <input type="text" id="mserver_connection_string" name="mserver_connection_string" class="form-control" />
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Kaydet</button>
+                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">İptal</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal fade" id="connection-detail-modal" data-bs-backdrop="static" tabindex="-1" aria-hidden=" true">
+            <div class="modal-dialog modal-lg modal-simple modal-edit-user">
+                <form id="detail-form" class="modal-content p-3 p-md-5">
+                    <div class="modal-body">
+                        <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="text-center mb-4">
+                            <h3 class="mb-2"><b id="con_name"></b> isimli bağlantı detayı</h3>
+
+                        </div>
+                        <div class="col-12 d-grid">
+                            <button class="btn btn-label-info me-1 waves-effect waves-light" type="button" data-bs-toggle="collapse" data-bs-target="#con-details" aria-expanded="true" aria-controls="con-details">
+                                Detayları Göster
+                            </button>
+                        </div>
+                        <div class="collapse" id="con-details">
+                            <input type="hidden" id="connection_id" name="connection_id" />
+                            <div class="row g-3 mt-2">
+                                <div class="col-12">
+                                    <label class="switch switch-lg">
+                                        <input id="u_status_checkbox" type="checkbox" class="switch-input">
+                                        <span class="switch-toggle-slider">
+                                            <span class="switch-on">
+                                                <i class="ti ti-check"></i>
+                                            </span>
+                                            <span class="switch-off">
+                                                <i class="ti ti-x"></i>
+                                            </span>
+                                        </span>
+                                        <span class="switch-label">Çalışma Durumu</span>
+                                    </label>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="u_company_name">Bağlantı Adı</label>
+                                    <input type="text" id="u_company_name" name="u_company_name" class="form-control"" />
+                                </div>
+                                <div class=" col-12">
+                                    <label class=" form-label" for="u_connection_type">Bağlantı Tipi</label>
+                                    <select id="u_connection_type" name="u_connection_type" class="form-select">
+                                        <option value="mssql">SQL Server</option>
+                                    </select>
+                                </div>
+                                <div class="col-10 col-md-8">
+                                    <label class="form-label" for="u_connection_string">Bağlantı Cümlesi</label>
+                                    <input type="text" id="u_connection_string" name="u_connection_string" class="form-control" />
+                                </div>
+                                <div class="col-2 col-md-4">
+                                    <div class="d-grid mt-4">
+                                        <button id="u_check_connection_string" type="button" class="btn btn-label-info">Test Et</button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="u_company_code">Firma Kodu</label>
+                                    <input type="text" id="u_company_code" name="u_company_code" class="form-control" placeholder="<gizli>" />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="u_mserver_connection_string">Ana Server Bağlantı URL'si</label>
+                                    <input type="text" id="u_mserver_connection_string" name="u_mserver_connection_string" class="form-control" placeholder="<gizli>" />
+                                </div>
+                                <div class="col-12 text-center">
+                                    <button id="update-detail" type="button" class="btn btn-primary me-sm-3 me-1">Güncelle</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-body demo-vertical-spacing demo-only-element">
+                                <div class="card-title header-elements">
+                                    <h4 class="m-0 me-2">Loglar</h4>
+                                    <div class="card-header-elements ms-auto">
+                                        <button id="refresh-detail-lines" type="button" class="btn btn-info waves-effect waves-light me-2">
+                                            <span class="tf-icon ti ti-refresh me-1"></span>Yenile
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div id="connection-detail-grid" style="width: 100%; height: 400px;" class="ag-theme-balham"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+        <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+        <div class="drag-target"></div>
+    </div>
+    <%- include('../../partials/theme_js') %>
+</body>
+
+</html>
