@@ -19,6 +19,7 @@ module.exports = (invoices, customers, balances) => {
                     let customer = lodash.find(customers, {
                         ErpKod2: invoice.MusteriKod,
                     });
+                    if (customer == undefined) continue;
                     let balance = lodash.find(balances, {
                         Musterikod: customer.Kod,
                     });
@@ -114,6 +115,7 @@ module.exports = (invoices, customers, balances) => {
                         document: invoice_object,
                     };
                 } else {
+                    if(!inv_ob?.document?.Lines) continue;
                     let lines = inv_ob.document.Lines;
 
                     let allowance = {};
