@@ -115,7 +115,7 @@ module.exports = (invoices, customers, balances) => {
                         document: invoice_object,
                     };
                 } else {
-                    if(!inv_ob?.document?.Lines) continue;
+                    if (!inv_ob?.document?.Lines) continue;
                     let lines = inv_ob.document.Lines;
 
                     let allowance = {};
@@ -145,6 +145,9 @@ module.exports = (invoices, customers, balances) => {
                         },
                     });
                     inv_ob.document.Lines = lines;
+                    if (i + 1 == invoices.length) {
+                        invoices_array.push(inv_ob);
+                    }
                 }
             }
             return resolve(invoices_array);
