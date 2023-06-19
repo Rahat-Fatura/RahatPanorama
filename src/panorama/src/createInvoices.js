@@ -7,8 +7,10 @@ module.exports = (invoices, customers, balances) => {
             let invoices_array = [];
             let rec_no = 0;
             let inv_ob = {};
+            invoices = lodash.filter(invoices, (invoice) => {
+                return invoice.Tur == 0;
+            });
             for (let i = 0; i < invoices.length; i++) {
-                if (invoices[i].Tur != 0) continue;
                 let invoice = invoices[i];
                 if (rec_no != invoice.Belgekod) {
                     if (rec_no != 0) {
@@ -114,6 +116,9 @@ module.exports = (invoices, customers, balances) => {
                         integrator: config.get("integrator"),
                         document: invoice_object,
                     };
+                    if (i + 1 == invoices.length) {
+                        invoices_array.push(inv_ob);
+                    }
                 } else {
                     if (!inv_ob?.document?.Lines) continue;
                     let lines = inv_ob.document.Lines;
