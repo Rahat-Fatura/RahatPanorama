@@ -62,6 +62,6 @@ typings/
 .DS_Store
 
 config
-data
+data/*
 package-lock.json
 prisma/rlocal.rls

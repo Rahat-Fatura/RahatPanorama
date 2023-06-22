@@ -24,7 +24,7 @@ router.get("/send/:date", async function (req, res, next) {
         for (let i = 0; i < invoices.length; i++) {
             let invoice = invoices[i];
             try {
-                await services.apiService.connect.invoice.insertInvoice(
+                await services.apiService.connect.invoice.updateInvoice(
                     invoice
                 );
                 invoices[i].status = "success";

@@ -23,8 +23,11 @@ module.exports = (invoices, customers, balances) => {
                         ErpKod2: invoice.MusteriKod,
                     });
                     if (customer == undefined) continue;
-                    let balance = lodash.find(balances, {
-                        Musterikod: customer.Kod,
+                    let customer_balances = lodash.filter(balances, (balance) => {
+                        return balance.Musterikod == customer.Kod;
+                    });
+                    let balance = lodash.sumBy(customer_balances, (balance) => {
+                        return balance.Bakiye;
                     });
                     let customer_object = {
                         TaxNumber: customer.VN
@@ -65,8 +68,8 @@ module.exports = (invoices, customers, balances) => {
                             },
                             {
                                 Note:
-                                    balance?.Bakiye != 0
-                                        ? `Müşteri Güncel Bakiyesi : ${balance?.Bakiye} TL`
+                                    balance != 0
+                                        ? `Müşteri Güncel Bakiyesi : ${balance} TL`
                                         : "",
                             },
                         ],
