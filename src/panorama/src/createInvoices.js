@@ -10,6 +10,7 @@ module.exports = (invoices, customers, balances) => {
             invoices = lodash.filter(invoices, (invoice) => {
                 return invoice.Tur == 0;
             });
+            invoices = lodash.sortBy(invoices, ["Belgekod"]);
             for (let i = 0; i < invoices.length; i++) {
                 let invoice = invoices[i];
                 if (rec_no != invoice.Belgekod) {
